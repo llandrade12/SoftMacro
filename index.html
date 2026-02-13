@@ -5,75 +5,386 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestão de Empréstimos - Relatório Mensal</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: linear-gradient(135deg, #271137 0%, #130323 100%); min-height: 100vh; padding: 30px; }
-        .container { max-width: 1400px; margin: 0 auto; background: #F8F9FA; border-radius: 15px; padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-        .header { background: #050207; border-radius: 10px 10px 0 0; padding: 25px; margin-bottom: 30px; }
-        .header h1 { color: white; font-size: 28px; font-weight: 600; text-align: center; letter-spacing: 1px; }
-        .header .subtitle { color: rgba(255,255,255,0.85); text-align: center; font-size: 16px; font-style: italic; margin-top: 8px; }
-        .header .date { color: rgba(255,255,255,0.7); text-align: center; font-size: 12px; margin-top: 12px; }
-        .upload-section { border: 3px dashed #000000; border-radius: 15px; padding: 50px; text-align: center; background: white; cursor: pointer; transition: all 0.3s; margin-bottom: 30px; }
-        .upload-section:hover { background: #F5EEF8; border-color: #0d0218; }
-        .upload-section.dragover { background: #E8F5E9; border-color: #28A745; }
-        .upload-icon { font-size: 64px; color: #1f0d2d; margin-bottom: 15px; }
-        .upload-text { font-size: 20px; color: #333; margin-bottom: 10px; }
-        .upload-hint { font-size: 14px; color: #666; }
-        .report-container { display: none; }
-        .report-container.visible { display: block; }
-        .card-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
-        .card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-left: 6px solid; transition: transform 0.3s; }
-        .card:hover { transform: translateY(-5px); }
-        .card-title { font-size: 14px; color: #666; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        .card-value { font-size: 28px; font-weight: bold; color: #13071b; }
-        .section-title { font-size: 20px; font-weight: 600; color: #140324; margin: 30px 0 20px; padding-bottom: 10px; border-bottom: 3px solid #150a1e; }
-        .table-container { overflow-x: auto; margin-bottom: 30px; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        th { background: white; color: #150426; font-weight: 600; padding: 15px 10px; border-bottom: 3px solid #12071a; white-space: nowrap; }
-        td { padding: 12px 10px; border-bottom: 1px solid #E0E0E0; }
-        tr:nth-child(even) { background-color: #FAFAFA; }
-        tr:hover { background-color: #F5EEF8; }
+        :root {
+            --bg: #0d1117;
+            --card: #161b22;
+            --muted: #8b949e;
+            --accent: #0ea5a4;
+            --primary: #1e3a8a;
+            --danger: #ef4444;
+            --success: #10b981;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.06);
+            --white: #e6edf3;
+            --shadow-lg: 0 10px 30px rgba(2, 6, 23, 0.7);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--white);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--card);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+        }
+
+        .header {
+            background: var(--glass);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: var(--accent);
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            color: var(--muted);
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .header .date {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 15px;
+            opacity: 0.8;
+        }
+
+        .upload-section {
+            border: 2px dashed var(--accent);
+            border-radius: 12px;
+            padding: 60px 20px;
+            text-align: center;
+            background: var(--glass);
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 30px;
+        }
+
+        .upload-section:hover {
+            background: rgba(14, 165, 164, 0.05);
+            border-color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .upload-section.dragover {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--success);
+        }
+
+        .upload-icon {
+            font-size: 50px;
+            color: var(--accent);
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .upload-text {
+            font-size: 18px;
+            color: var(--white);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .upload-hint {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .report-container {
+            display: none;
+        }
+
+        .report-container.visible {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: var(--glass);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 6px 18px rgba(2, 6, 23, 0.6);
+            border: 1px solid var(--border);
+            border-left: 6px solid var(--accent);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--accent);
+        }
+
+        .card-title {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .card-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 40px 0 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 30px;
+            background: var(--glass);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--accent);
+            font-weight: 600;
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--white);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
         .text-right { text-align: right; }
         .text-left { text-align: left; }
-        .font-bold { font-weight: 600; }
-        .status-active { color: #1d4225; font-weight: 600; }
-        .status-danger { color: #ba4032; font-weight: 600; }
-        .status-do-not-lend { color: #670101; font-weight: 600; }
-        .status-agreement { color: #a06602; font-weight: 600; }
-        .status-quitado { color: #115c23; font-weight: 600; }
-        .status-orange { color: #ff8c00; font-weight: 600; } /* Novo estilo para laranja */
-        .totals-row { background: #F5EEF8 !important; font-weight: 600; border-top: 2px solid #333; border-bottom: 2px solid #333; }
-        .toolbar { display: flex; justify-content: flex-end; gap: 15px; margin-bottom: 20px; }
-        .btn { padding: 12px 25px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
-        .btn-primary { background: #170a21; color: white; }
-        .btn-primary:hover { background: #10031d; transform: translateY(-2px); }
-        .btn-success { background: #28A745; color: white; }
-        .btn-success:hover { background: #1E7E34; transform: translateY(-2px); }
-        .loading { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 20px 40px; border-radius: 10px; z-index: 1000; }
-        .loading.visible { display: block; }
-        .error-message { background: #FFE6E6; border: 1px solid #ff1900; border-radius: 8px; padding: 15px; color: #ff1900; margin-bottom: 20px; display: none; }
+        .font-bold { font-weight: 700; }
+
+        .status-active { color: var(--success); font-weight: 600; }
+        .status-danger { color: var(--danger); font-weight: 600; }
+        
+        .totals-row {
+            background: rgba(14, 165, 164, 0.05) !important;
+            font-weight: 700;
+            border-top: 2px solid var(--border);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .totals-row td {
+            color: var(--accent);
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--glass);
+            color: var(--white);
+        }
+
+        .btn:hover {
+            background: var(--accent);
+            color: var(--bg);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .btn-success:hover {
+            background: var(--success);
+            color: var(--bg);
+        }
+
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(13, 17, 23, 0.9);
+            color: var(--white);
+            z-index: 1000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .loading.visible { display: flex; }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            border-radius: 8px;
+            padding: 16px;
+            color: var(--danger);
+            margin-bottom: 20px;
+            display: none;
+            font-weight: 500;
+        }
+
         .error-message.visible { display: block; }
-        .footer { margin-top: 40px; padding: 20px; text-align: center; color: #666; font-size: 12px; border-top: 1px solid #E0E0E0; }
-        .zoom-control { position: fixed; bottom: 20px; right: 20px; background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); display: flex; gap: 10px; z-index: 100; }
-        @media print { body { background: white; } .container { box-shadow: none; } .upload-section, .toolbar, .zoom-control { display: none; } }
+
+        .footer {
+            margin-top: 50px;
+            padding: 30px 0;
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .zoom-control {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--card);
+            padding: 8px;
+            border-radius: 10px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 100;
+            border: 1px solid var(--border);
+        }
+
+        .zoom-control button {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            color: var(--white);
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .zoom-control button:hover {
+            background: var(--accent);
+            color: var(--bg);
+        }
+
+        @media print {
+            body { background: white; color: black; padding: 0; }
+            .container { box-shadow: none; border: none; width: 100%; max-width: none; }
+            .upload-section, .toolbar, .zoom-control { display: none; }
+            .card { border: 1px solid #ddd; background: white; color: black; }
+            .card-value, .card-title, th, td { color: black !important; }
+            .table-container { border: 1px solid #ddd; }
+        }
     </style>
 </head>
 <body>
     <div class="loading" id="loading">
         <h3>Processando dados...</h3>
-        <p style="margin-top: 10px;">Detectando status por múltiplos critérios...</p>
+        <p style="margin-top: 10px;">Só um momento...</p>
     </div>
 
     <div class="container">
         <div class="header">
             <h1>Relatório Financeiro</h1>
-            <div class="subtitle">Sistema de Gestão de Empréstimos (v1.1 - Detecção Aprimorada)</div>
+            <div class="subtitle">Relatório dos Estados</div>
             <div class="date" id="currentDate"></div>
         </div>
 
         <div class="upload-section" id="uploadArea">
             <div class="upload-icon">📊</div>
-            <div class="upload-text">Arraste sua planilha Excel ou clique para selecionar</div>
-            <div class="upload-hint">Detecta ACORDO e LARANJA automaticamente por texto e lógica</div>
+            <div class="upload-text">Arraste sua planilha Excel (Formato .xlsm, .xlsx) ou clique para selecionar a planilha</div>
+            <div class="upload-hint">A planilha deve conter a aba "Planilha Atual" com os dados</div>
             <input type="file" id="fileInput" accept=".xlsx,.xlsm" style="display: none;">
         </div>
 
@@ -81,38 +392,55 @@
 
         <div class="report-container" id="reportContainer">
             <div class="toolbar">
-                <button class="btn btn-primary" onclick="window.print()"><span>📄</span> PDF / Imprimir</button>
-                <button class="btn btn-primary" onclick="resetSystem()"><span>🔄</span> Nova Planilha</button>
+                <button class="btn btn-primary" onclick="exportToPDF()">
+                    <span>📄</span> PDF
+                </button>
+                <button class="btn btn-success" onclick="printReport()">
+                    <span>🖨️</span> Imprimir
+                </button>
+                <button class="btn btn-primary" onclick="resetSystem()">
+                    <span>🔄</span> Nova Planilha
+                </button>
             </div>
+
             <div id="reportContent"></div>
-            <div class="footer">Confidencial - Uso Interno<br>Gerado em: <span id="generatedDateTime"></span></div>
+            
+            <div class="footer">
+                Confidencial - Uso Interno<br>
+                Gerado em: <span id="generatedDateTime"></span>
+            </div>
         </div>
     </div>
 
     <div class="zoom-control">
-        <button onclick="zoomOut()">−</button>
-        <span id="zoomLevel">85%</span>
-        <button onclick="zoomIn()">+</button>
+        <button onclick="zoomOut()" style="padding: 5px 10px; cursor: pointer;">−</button>
+        <span id="zoomLevel" style="padding: 0 10px;">85%</span>
+        <button onclick="zoomIn()" style="padding: 5px 10px; cursor: pointer;">+</button>
     </div>
 
     <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
     <script>
+
+
         const SHEET_NAME_DATA = "Planilha Atual";
         const CUTOFF_DAY = 12;
+        
         const COL = { 
-            STATUS: 0,    // Coluna A - Status
-            NOME: 2,      // Coluna C - Nome
-            DATA: 4,      // Coluna E - Data
-            VALOR: 5,     // Coluna F - Valor
-            EMPRESTADO: 6, // Coluna G - Emprestado
-            PREVISTO: 9,  // Coluna J - Previsto
-            PAGO: 10,     // Coluna K - Pago
-            OBS: 16       // Coluna Q - Observações
+            CLIENTE: 0,     
+            DATA_INICIAL: 4,
+            DATA_FINAL: 5,  
+            EMPRESTIMO: 6,  
+            TOTAL_PAGAR: 9,  
+            VALOR_PAGO: 10,  
+            DIARIAS: 14,     
+            OBSERVACAO: 15,  
+            STATUS_CLI: 16,  
+            DATA_ATUAL: 17   
         };
 
         let monthlyData = {};
         let currentZoom = 85;
-        let stats = { totalLinhas: 0, linhasProcessadas: 0, linhasIgnoradas: 0 };
+        let stats = { totalLinhas: 0, linhasProcessadas: 0, linhasIgnoradas: 0, statusCount: {} };
 
         document.addEventListener('DOMContentLoaded', () => {
             updateDateTime();
@@ -167,41 +495,34 @@
 
         function processData(rows) {
             monthlyData = {};
-            stats = { totalLinhas: rows.length - 1, linhasProcessadas: 0, linhasIgnoradas: 0 };
+            stats = { totalLinhas: rows.length - 1, linhasProcessadas: 0, linhasIgnoradas: 0, statusCount: {} };
             const hoje = new Date();
             
             for (let i = 1; i < rows.length; i++) {
                 const row = rows[i];
                 
-                // Pular linhas vazias
                 if (!row || row.length < 5) { 
                     stats.linhasIgnoradas++; 
                     continue; 
                 }
 
-                // Verificar se tem dados mínimos
-                if (!row[COL.DATA] && !row[COL.EMPRESTADO]) { 
-                    stats.linhasIgnoradas++; 
-                    continue; 
-                }
-
-                const dataOriginal = parseExcelDate(row[COL.DATA]);
-                const periodo = extractPeriodo(dataOriginal);
+                const dataRefPeriodo = parseExcelDate(row[COL.DATA_INICIAL]);
+                const periodo = extractPeriodo(dataRefPeriodo);
                 
                 if (periodo === 'Sem Data') { 
                     stats.linhasIgnoradas++; 
                     continue; 
                 }
 
-                // Extrair valores
-                const valorEmprestado = getNum(row[COL.EMPRESTADO] || row[COL.VALOR]);
-                const valorPrevisto = getNum(row[COL.PREVISTO]);
-                const valorPago = getNum(row[COL.PAGO]);
+                const valorEmprestado = getNum(row[COL.EMPRESTIMO]);
+                const valorPrevisto = getNum(row[COL.TOTAL_PAGAR]);
+                const valorPago = getNum(row[COL.VALOR_PAGO]);
                 
-                // Determinar status com múltiplos critérios
-                const status = determinarStatus(row, dataOriginal, hoje, valorPrevisto, valorPago);
+                const lucro = valorPago > valorPrevisto ? valorPago - valorPrevisto : 0;
+                const saldoAberto = valorPrevisto > valorPago ? valorPrevisto - valorPago : 0;
 
-                // Inicializar período se necessário
+                const status = determinarStatusFinal(row, dataRefPeriodo, hoje, valorPrevisto, valorPago);
+
                 if (!monthlyData[periodo]) {
                     monthlyData[periodo] = {
                         totalEmprestado: 0, totalPrevisto: 0, totalPago: 0, 
@@ -211,140 +532,79 @@
                             'ATIVO': 0, 
                             'NÃO EMPRESTAR': 0, 
                             'QUITADO': 0, 
-                            'AMARELADO': 0,  // Laranja/Amarelo
-                            'COBRAR': 0,      // Vermelho
-                            'CLIENTE EM ACORDO': 0 
+                            'AMARELADO': 0, 
+                            'COBRAR': 0, 
+                            'CLIENTE EM ACORDO': 0, 
+                            'VERDE': 0 
                         }
                     };
                 }
 
                 const p = monthlyData[periodo];
-                
-                // Acumular valores
                 p.totalEmprestado += valorEmprestado;
                 p.totalPrevisto += valorPrevisto;
                 p.totalPago += valorPago;
-                p.totalLucro += (valorPago > valorPrevisto ? valorPago - valorPrevisto : 0);
-                p.totalSaldoAberto += (valorPrevisto > valorPago ? valorPrevisto - valorPago : 0);
+                p.totalLucro += lucro;
+                p.totalSaldoAberto += saldoAberto;
 
-                // Valores até dia 12
-                if (dataOriginal && dataOriginal.getDate() <= CUTOFF_DAY) {
+                if (dataRefPeriodo && dataRefPeriodo.getDate() <= CUTOFF_DAY) {
                     p.emprestadoAte12 += valorEmprestado;
                     p.previstoAte12 += valorPrevisto;
                     p.pagoAte12 += valorPago;
                 }
 
-                // Incrementar contador de status
                 if (p.status[status] !== undefined) {
                     p.status[status]++;
                 } else {
-                    console.warn('Status desconhecido:', status);
-                    p.status['ATIVO']++; // Fallback
+                    p.status['ATIVO']++;
                 }
                 
                 stats.linhasProcessadas++;
+                stats.statusCount[status] = (stats.statusCount[status] || 0) + 1;
             }
-            
-            console.log('Processamento concluído:', stats);
         }
 
-        function determinarStatus(linha, dataRef, hoje, valorPrevisto, valorPago) {
-            // Coletar textos de todas as colunas relevantes
-            const obs = String(linha[COL.OBS] || '').toUpperCase().trim();
-            const stTxt = String(linha[COL.STATUS] || '').toUpperCase().trim();
-            const nome = String(linha[COL.NOME] || '').toUpperCase().trim();
+        function determinarStatusFinal(linha, dataRef, hoje, valorPrevisto, valorPago) {
+            const colO_Diarias = getNum(linha[COL.DIARIAS]);
+            const colP_Obs = String(linha[COL.OBSERVACAO] || '').toLowerCase().trim();
+            const colF_DataFinal = parseExcelDate(linha[COL.DATA_FINAL]);
+            const colR_DataAtual = parseExcelDate(linha[COL.DATA_ATUAL]);
             
-            // Concatenar tudo para busca de palavras-chave
-            const fullTxt = `${nome} ${obs} ${stTxt}`;
+            if (colP_Obs.includes('acordo')) return 'CLIENTE EM ACORDO';
+            if (colO_Diarias === 20) return 'VERDE';
             
-            // 1. PRIORIDADE MÁXIMA: ACORDO (detectado por texto)
-            if (fullTxt.includes('ACORDO') || 
-                fullTxt.includes('ACORDADO') || 
-                fullTxt.includes('ACERTADO') ||
-                (obs.includes('ACORDO') && !obs.includes('SEM ACORDO'))) {
-                console.log('ACORDO detectado em:', nome);
-                return 'CLIENTE EM ACORDO';
-            }
-            
-            // 2. NÃO EMPRESTAR (detectado por texto)
-            if (fullTxt.includes('NÃO EMPRESTAR') || 
-                fullTxt.includes('NAO EMPRESTAR') ||
-                fullTxt.includes('NÃO') || 
-                fullTxt.includes('NAO')) {
-                return 'NÃO EMPRESTAR';
-            }
-            
-            // 3. QUITADO (detectado por texto ou valores)
-            if (fullTxt.includes('QUITADO') || fullTxt.includes('QUITADA')) {
-                return 'QUITADO';
-            }
-            
-            // 4. Verificar quitação por valores
-            if (valorPago >= valorPrevisto && valorPrevisto > 0) {
-                return 'QUITADO';
-            }
-
-            // 5. AMARELADO/LARANJA (detectado por texto ou atraso)
-            if (fullTxt.includes('AMAREL') || 
-                fullTxt.includes('LARANJA') ||
-                fullTxt.includes('ATENÇÃO') ||
-                fullTxt.includes('ATENCAO')) {
-                return 'AMARELADO';
-            }
-
-            // 6. COBRAR (detectado por texto)
-            if (fullTxt.includes('COBRAR') || 
-                fullTxt.includes('VENCEU') ||
-                fullTxt.includes('ATRASADO')) {
-                return 'COBRAR';
-            }
-
-            // 7. Lógica de atraso automática (simulando formatação condicional)
-            if (dataRef && valorPrevisto > valorPago) {
-                const diffTempo = hoje - dataRef;
+            if (colF_DataFinal && colR_DataAtual && colO_Diarias !== 20) {
+                const diffTempo = colR_DataAtual - colF_DataFinal;
                 const diffDias = Math.ceil(diffTempo / (1000 * 60 * 60 * 24));
-
-                if (diffDias > 30) {
-                    return 'COBRAR';      // Vermelho (atraso > 30 dias)
-                }
-                if (diffDias > 5) {
-                    return 'AMARELADO';   // Laranja (atraso entre 6-30 dias)
-                }
+                
+                if (diffDias >= 90) return 'COBRAR';
+                if (diffDias >= 1) return 'AMARELADO';
             }
-
-            // 8. Padrão: ATIVO
+            
+            const statusTxt = String(linha[COL.STATUS_CLI] || '').toUpperCase();
+            if (statusTxt.includes('NÃO') || statusTxt.includes('NAO')) return 'NÃO EMPRESTAR';
+            if (valorPago >= valorPrevisto && valorPrevisto > 0) return 'QUITADO';
+            
             return 'ATIVO';
         }
 
         function parseExcelDate(val) {
             if (!val) return null;
-            
             try {
-                // Se já é Date
                 if (val instanceof Date) return val;
-                
-                // Se é número Excel (ex: 45012)
                 if (typeof val === 'number') {
                     const d = XLSX.SSF.parse_date_code(val);
                     if (d) return new Date(d.y, d.m - 1, d.d);
                 }
-                
-                // Se é string com formato brasileiro
                 if (typeof val === 'string') {
                     if (val.includes('/')) {
                         const p = val.split('/');
-                        if (p.length === 3) {
-                            return new Date(p[2], p[1] - 1, p[0]);
-                        }
+                        if (p.length === 3) return new Date(p[2], p[1] - 1, p[0]);
                     }
-                    // Tentar conversão direta
                     const d = new Date(val);
                     if (!isNaN(d.getTime())) return d;
                 }
-            } catch (e) {
-                console.warn('Erro ao parsear data:', val, e);
-            }
-            
+            } catch (e) {}
             return null;
         }
 
@@ -356,171 +616,143 @@
         function getNum(v) {
             if (v === null || v === undefined || v === '') return 0;
             if (typeof v === 'number') return v;
-            
             try {
-                // Remover R$, espaços, pontos de milhar e converter vírgula decimal
-                let cleaned = String(v).replace(/[R$\s]/g, '')
-                                     .replace(/\./g, '')
-                                     .replace(',', '.');
+                let cleaned = String(v).replace(/[R$\s]/g, '').replace(/\./g, '').replace(',', '.');
                 let n = parseFloat(cleaned);
                 return isNaN(n) ? 0 : n;
-            } catch (e) {
-                return 0;
-            }
+            } catch (e) { return 0; }
         }
 
-        function formatBRL(v) { 
-            return 'R$ ' + v.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.'); 
+        function formatCurrency(value) {
+            return 'R$ ' + value.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        function formatPeriodoLabel(periodo) {
+            if (periodo === 'Sem Data') return 'SEM DATA';
+            const [ano, mes] = periodo.split('-');
+            const meses = ['JANEIRO', 'FEVEREIRO', 'MARÇO', 'ABRIL', 'MAIO', 'JUNHO', 'JULHO', 'AGOSTO', 'SETEMBRO', 'OUTUBRO', 'NOVEMBRO', 'DEZEMBRO'];
+            return `${meses[parseInt(mes) - 1]} ${ano}`;
         }
 
         function generateReport() {
             const periodos = Object.keys(monthlyData).sort();
-            
-            // Calcular totais
-            let totaisStatus = {
-                'ATIVO': 0, 'NÃO EMPRESTAR': 0, 'QUITADO': 0, 
-                'AMARELADO': 0, 'COBRAR': 0, 'CLIENTE EM ACORDO': 0
-            };
-            
-            let totalEmprestado = 0, totalPago = 0, totalSaldo = 0, totalLucro = 0;
-            
-            periodos.forEach(pKey => {
-                const p = monthlyData[pKey];
-                totalEmprestado += p.totalEmprestado;
-                totalPago += p.totalPago;
-                totalSaldo += p.totalSaldoAberto;
-                totalLucro += p.totalLucro;
+            let totaisGerais = { emprestado: 0, pago: 0, saldo: 0, lucro: 0, emprestadoAte12: 0, previstoAte12: 0, pagoAte12: 0, totalPrevisto: 0 };
+            let totaisStatus = { 'ATIVO': 0, 'AMARELADO': 0, 'COBRAR': 0, 'CLIENTE EM ACORDO': 0, 'VERDE': 0 };
+
+            let html = `
+                <div class="card-grid">
+                    <div class="card" style="border-left-color: #7030A0;"><div class="card-title">Total Emprestado</div><div class="card-value">${formatCurrency(periodos.reduce((acc, p) => acc + monthlyData[p].totalEmprestado, 0))}</div></div>
+                    <div class="card" style="border-left-color: #28A745;"><div class="card-title">Total Pago</div><div class="card-value">${formatCurrency(periodos.reduce((acc, p) => acc + monthlyData[p].totalPago, 0))}</div></div>
+                    <div class="card" style="border-left-color: #E74C3C;"><div class="card-title">Saldo em Aberto</div><div class="card-value">${formatCurrency(periodos.reduce((acc, p) => acc + monthlyData[p].totalSaldoAberto, 0))}</div></div>
+                    <div class="card" style="border-left-color: #28A745;"><div class="card-title">Lucro/Excedente</div><div class="card-value">${formatCurrency(periodos.reduce((acc, p) => acc + monthlyData[p].totalLucro, 0))}</div></div>
+                </div>
+
+                <div class="section-title">ANÁLISE FINANCEIRA POR PERÍODO</div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="text-left">PERÍODO</th>
+                                <th class="text-right">EMPREST. (até dia 12)</th>
+                                <th class="text-right">PREVISTO (até dia 12)</th>
+                                <th class="text-right">PAGO (até dia 12)</th>
+                                <th class="text-right">TOTAL EMPRESTADO</th>
+                                <th class="text-right">TOTAL PREVISTO</th>
+                                <th class="text-right">VALOR PAGO (TOTAL)</th>
+                                <th class="text-right">LUCRO/EXCEDENTE</th>
+                                <th class="text-right">SALDO EM ABERTO</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+
+            periodos.forEach(periodo => {
+                const p = monthlyData[periodo];
+                html += `<tr>
+                    <td class="text-left font-bold">${formatPeriodoLabel(periodo)}</td>
+                    <td class="text-right">${formatCurrency(p.emprestadoAte12)}</td>
+                    <td class="text-right">${formatCurrency(p.previstoAte12)}</td>
+                    <td class="text-right">${formatCurrency(p.pagoAte12)}</td>
+                    <td class="text-right">${formatCurrency(p.totalEmprestado)}</td>
+                    <td class="text-right">${formatCurrency(p.totalPrevisto)}</td>
+                    <td class="text-right">${formatCurrency(p.totalPago)}</td>
+                    <td class="text-right">${formatCurrency(p.totalLucro)}</td>
+                    <td class="text-right">${formatCurrency(p.totalSaldoAberto)}</td>
+                </tr>`;
                 
-                Object.keys(p.status).forEach(s => {
-                    totaisStatus[s] += p.status[s];
-                });
+                totaisGerais.emprestado += p.totalEmprestado; totaisGerais.totalPrevisto += p.totalPrevisto; totaisGerais.pago += p.totalPago;
+                totaisGerais.lucro += p.totalLucro; totaisGerais.saldo += p.totalSaldoAberto;
+                totaisGerais.emprestadoAte12 += p.emprestadoAte12; totaisGerais.previstoAte12 += p.previstoAte12; totaisGerais.pagoAte12 += p.pagoAte12;
+                Object.keys(p.status).forEach(s => { if(totaisStatus[s] !== undefined) totaisStatus[s] += p.status[s]; });
             });
 
-            // Cards de resumo
-            let html = `<div class="card-grid">
-                <div class="card" style="border-left-color: #7030A0;">
-                    <div class="card-title">Total Emprestado</div>
-                    <div class="card-value">${formatBRL(totalEmprestado)}</div>
-                </div>
-                <div class="card" style="border-left-color: #28A745;">
-                    <div class="card-title">Total Pago</div>
-                    <div class="card-value">${formatBRL(totalPago)}</div>
-                </div>
-                <div class="card" style="border-left-color: #E74C3C;">
-                    <div class="card-title">Saldo em Aberto</div>
-                    <div class="card-value">${formatBRL(totalSaldo)}</div>
-                </div>
-                <div class="card" style="border-left-color: #28A745;">
-                    <div class="card-title">Lucro/Excedente</div>
-                    <div class="card-value">${formatBRL(totalLucro)}</div>
-                </div>
-            </div>`;
+            html += `<tr class="totals-row">
+                <td class="text-left font-bold">TOTAIS</td>
+                <td class="text-right">${formatCurrency(totaisGerais.emprestadoAte12)}</td>
+                <td class="text-right">${formatCurrency(totaisGerais.previstoAte12)}</td>
+                <td class="text-right">${formatCurrency(totaisGerais.pagoAte12)}</td>
+                <td class="text-right">${formatCurrency(totaisGerais.emprestado)}</td>
+                <td class="text-right">${formatCurrency(totaisGerais.totalPrevisto)}</td>
+                <td class="text-right">${formatCurrency(totaisGerais.pago)}</td>
+                <td class="text-right">${formatCurrency(totaisGerais.lucro)}</td>
+                <td class="text-right">${formatCurrency(totaisGerais.saldo)}</td>
+            </tr></tbody></table></div>
 
-            // Tabela de Status
-            html += `<div class="section-title">ANÁLISE DE STATUS POR PERÍODO</div>
-                     <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th class="text-left">PERÍODO</th>
-                                    <th class="text-right">ATIVO</th>
-                                    <th class="text-right">NÃO EMPRESTAR</th>
-                                    <th class="text-right">QUITADO</th>
-                                    <th class="text-right">AMARELADO/LARANJA</th>
-                                    <th class="text-right">COBRAR</th>
-                                    <th class="text-right">CLIENTE EM ACORDO</th>
-                                    <th class="text-right">TOTAL</th>
-                                </tr>
-                            </thead>
-                            <tbody>`;
+            <div class="section-title">RESUMO DE STATUS DOS CLIENTES</div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="text-left">PERÍODO</th>
+                            <th class="text-right">ATIVO</th>
+                            <th class="text-right">AMARELO (1-89 dias)</th>
+                            <th class="text-right">VERMELHO (>=90 dias)</th>
+                            <th class="text-right">ACORDO (Laranja)</th>
+                            <th class="text-right">VERDE (O=20)</th>
+                            <th class="text-right">TOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
 
-            periodos.forEach(pKey => {
-                const p = monthlyData[pKey];
-                const total = Object.values(p.status).reduce((a, b) => a + b, 0);
-                const [ano, mes] = pKey.split('-');
-                const meses = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
-                const nomeMes = meses[parseInt(mes) - 1];
-                
+            periodos.forEach(periodo => {
+                const p = monthlyData[periodo];
+                const totalLinhaVisivel = p.status['ATIVO'] + p.status['AMARELADO'] + p.status['COBRAR'] + p.status['CLIENTE EM ACORDO'] + p.status['VERDE'];
                 html += `<tr>
-                    <td class="text-left font-bold">${nomeMes} ${ano}</td>
+                    <td class="text-left font-bold">${formatPeriodoLabel(periodo)}</td>
                     <td class="text-right status-active">${p.status['ATIVO']}</td>
-                    <td class="text-right status-do-not-lend">${p.status['NÃO EMPRESTAR']}</td>
-                    <td class="text-right status-quitado">${p.status['QUITADO']}</td>
-                    <td class="text-right status-orange">${p.status['AMARELADO']}</td>
-                    <td class="text-right status-danger">${p.status['COBRAR']}</td>
-                    <td class="text-right status-agreement">${p.status['CLIENTE EM ACORDO']}</td>
-                    <td class="text-right font-bold">${total}</td>
+                    <td class="text-right" style="color: #a0a000; font-weight: bold;">${p.status['AMARELADO']}</td>
+                    <td class="text-right" style="color: #990100; font-weight: bold;">${p.status['COBRAR']}</td>
+                    <td class="text-right" style="color: #FFA200; font-weight: bold;">${p.status['CLIENTE EM ACORDO']}</td>
+                    <td class="text-right" style="color: #38B000; font-weight: bold;">${p.status['VERDE']}</td>
+                    <td class="text-right font-bold">${totalLinhaVisivel}</td>
                 </tr>`;
             });
 
-            // Linha de totais
-            const totalGeral = Object.values(totaisStatus).reduce((a, b) => a + b, 0);
+            const totalStatusGeralVisivel = Object.values(totaisStatus).reduce((a, b) => a + b, 0);
             html += `<tr class="totals-row">
                 <td class="text-left font-bold">TOTAIS</td>
-                <td class="text-right font-bold">${totaisStatus['ATIVO']}</td>
-                <td class="text-right font-bold">${totaisStatus['NÃO EMPRESTAR']}</td>
-                <td class="text-right font-bold">${totaisStatus['QUITADO']}</td>
-                <td class="text-right font-bold">${totaisStatus['AMARELADO']}</td>
-                <td class="text-right font-bold">${totaisStatus['COBRAR']}</td>
-                <td class="text-right font-bold">${totaisStatus['CLIENTE EM ACORDO']}</td>
-                <td class="text-right font-bold">${totalGeral}</td>
-            </tr>`;
-
-            html += `</tbody></table></div>`;
-
-            // Estatísticas de processamento
-            if (stats.linhasProcessadas > 0) {
-                html += `<div style="margin-top: 20px; padding: 15px; background: #F5EEF8; border-radius: 8px; font-size: 11px;">
-                    <span style="color: #7030A0; font-weight: 600;">📊 Estatísticas:</span>
-                    Total de linhas: ${stats.totalLinhas} | 
-                    Processadas: ${stats.linhasProcessadas} | 
-                    Ignoradas: ${stats.linhasIgnoradas} |
-                    <span style="color: #28A745;">✓ Detecção aprimorada (ACORDO/LARANJA por texto)</span>
-                </div>`;
-            }
+                <td class="text-right">${totaisStatus['ATIVO']}</td>
+                <td class="text-right">${totaisStatus['AMARELADO']}</td>
+                <td class="text-right">${totaisStatus['COBRAR']}</td>
+                <td class="text-right">${totaisStatus['CLIENTE EM ACORDO']}</td>
+                <td class="text-right">${totaisStatus['VERDE']}</td>
+                <td class="text-right">${totalStatusGeralVisivel}</td>
+            </tr></tbody></table></div>`;
 
             document.getElementById('reportContent').innerHTML = html;
         }
 
         function updateDateTime() {
-            const d = new Date().toLocaleString('pt-BR', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
+            const d = new Date().toLocaleString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
             document.getElementById('currentDate').textContent = 'Gerado em ' + d;
             document.getElementById('generatedDateTime').textContent = d;
         }
 
-        function showError(m) { 
-            const e = document.getElementById('errorMessage'); 
-            e.textContent = m; 
-            e.classList.add('visible');
-            setTimeout(() => e.classList.remove('visible'), 5000);
-        }
-        
+        function showError(m) { const e = document.getElementById('errorMessage'); e.textContent = m; e.classList.add('visible'); setTimeout(() => e.classList.remove('visible'), 5000); }
         function showLoading() { document.getElementById('loading').classList.add('visible'); }
         function hideLoading() { document.getElementById('loading').classList.remove('visible'); }
         function resetSystem() { location.reload(); }
-        
-        function zoomIn() { 
-            if (currentZoom < 150) {
-                currentZoom += 5; 
-                document.body.style.zoom = currentZoom + '%'; 
-                document.getElementById('zoomLevel').textContent = currentZoom + '%';
-            }
-        }
-        
-        function zoomOut() { 
-            if (currentZoom > 50) {
-                currentZoom -= 5; 
-                document.body.style.zoom = currentZoom + '%'; 
-                document.getElementById('zoomLevel').textContent = currentZoom + '%';
-            }
-        }
+        function zoomIn() { if (currentZoom < 150) { currentZoom += 5; document.body.style.zoom = currentZoom + '%'; document.getElementById('zoomLevel').textContent = currentZoom + '%'; } }
+        function zoomOut() { if (currentZoom > 50) { currentZoom -= 5; document.body.style.zoom = currentZoom + '%'; document.getElementById('zoomLevel').textContent = currentZoom + '%'; } }
     </script>
 </body>
 </html>
